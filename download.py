@@ -7,9 +7,9 @@ from math import floor
 from multiprocessing import Pool
 
 
-nbQuestions = 500
+nbQuestions = 2000
 nbBatches = floor(nbQuestions / 50)
-categories = [e for e in range(50)]
+categories = [e for e in range(9,33)]
 
 # Generate a token
 response = urlopen("https://opentdb.com/api_token.php?command=request")
