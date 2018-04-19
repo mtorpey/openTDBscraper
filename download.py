@@ -4,41 +4,32 @@ import json
 from urllib.request import urlopen
 from random import shuffle
 
+sourceurl = 'https://opentdb.com/api.php?amount=50&category=23'
+file = open("questions.csv", "w")
+
 # Generate a token
 response = urlopen("https://opentdb.com/api_token.php?command=request")
 html = response.read()
 token = json.loads(html)["token"]
-print(token)
+print("Using session token: " + token)
 
 # Download the questions/answers
-response = urlopen('https://opentdb.com/api.php?amount=5&category=23' + "&token=" + token)
+response = urlopen(sourceurl + "&token=" + token)
 html = response.read()
 questions = json.loads(html)["results"]
 
-#for question in questions:
-#    #print(question)
-#    if question["type"] == "boolean":
-#        print("True or false?")
-#    else:
-#        print("Multiple choice question:")
-#    print(question["question"])
-#    print(question["correct_answer"])
-#    if question["type"] == "multiple":
-#        for answer in question["incorrect_answers"]:
-#            print(answer)
-#    print("\n")
-
-
+# Process the questions/answers
 for q in questions:
     line = ""
     if q["type"] == "boolean":
-        line += "True or False\n"
-        line += q["question"]
+        line += "True or false?" + ";" + q["question"].replace(";", '')
     else:
-        line += q["question"] + "\t"
+        line += q["question"].replace(";", '') + ";"
         answers = [q["correct_answer"]] + q["incorrect_answers"]
         shuffle(answers)
         for answer in answers:
-            line += "\n" + answer
-    line += "\n\tAnswer: " + q["correct_answer"]
-    print(line, "\n")
+            line += answer.replace(";", '') + "<br>"
+        line = line[:-4]
+    line += ";" + q["correct_answer"].replace(";", '') + "\n"
+    file.write(line)
+file.close()
