@@ -11,6 +11,7 @@ from multiprocessing import Pool
 nbQuestions = 1000
 nbQuestionsPerBatches = 20
 nbBatches = floor(nbQuestions / nbQuestionsPerBatches)
+#TODO: Query https://opentdb.com/api_category.php to get the exact list of categories and store the id/name pair in a dict/list 
 categories = [e for e in range(1,33)]
 
 # Generate a token
@@ -28,7 +29,6 @@ def download_category(category, token=session_token):
     categoryurl = 'https://opentdb.com/api.php?amount=1&category=%d' % category
     sourceurl = 'https://opentdb.com/api.php?amount=%d&category=%d&token=%s'\
          % (nbQuestionsPerBatches, category, token)
-         
     response = urlopen(categoryurl)
     html = response.read()
     results = json.loads(html)["results"]
