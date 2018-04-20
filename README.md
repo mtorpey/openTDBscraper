@@ -13,3 +13,7 @@ The script will automatically download every trivia category from openTDB, creat
 * random
 * math
 * mutliprocessing
+
+# Credits
+
+[OpenTriviaDB](https://opentdb.com/) questions by [PIXELTAIL GAMES LLC](http://www.pixeltailgames.com/) are licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
