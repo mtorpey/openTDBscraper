@@ -60,7 +60,7 @@ def download_category(category, token=session_token):
             for q in questions:
                 line = ""
                 if q["type"] == "boolean":
-                    line += "True or false?" + ";" + q["question"].replace(";", '')
+                    line += q["question"].replace(";", '') + ";" + "True or false?"
                 else:
                     line += q["question"].replace(";", '') + ";"
                     answers = [q["correct_answer"]] + q["incorrect_answers"]
@@ -88,7 +88,7 @@ def download_category(category, token=session_token):
     for q in questions:
         line = ""
         if q["type"] == "boolean":
-            line += "True or false?" + ";" + q["question"].replace(";", '')
+            line += q["question"].replace(";", '') + ";" + "True or false?" 
         else:
             line += q["question"].replace(";", '') + ";"
             answers = [q["correct_answer"]] + q["incorrect_answers"]
