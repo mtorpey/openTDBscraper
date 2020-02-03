@@ -14,6 +14,8 @@ nb_questions_per_batch = 50
 response = urlopen("https://opentdb.com/api_category.php")
 html = response.read()
 categories = json.loads(html)["trivia_categories"]
+print("Got the following categories:")
+print(categories)
 
 # Generate a token
 response = urlopen("https://opentdb.com/api_token.php?command=request")
@@ -40,17 +42,17 @@ def download_category(category, token=session_token):
 
     # Full-size batches
     for i in range(nr_batches):
-        print("Batch", i + 1, "of", nr_batches + 1, "for category", category_id)
+        print("Batch", i + 1, "of", nr_batches + 1, "in category", category_id)
         questions += next_batch(nb_questions_per_batch, category_id, token)
 
     # Last few questions
     print(
-        "Batch", nr_batches + 1, "of", nr_batches + 1, "for category", category_id,
+        "Batch", nr_batches + 1, "of", nr_batches + 1, "in category", category_id,
     )
     questions += next_batch(remaining_questions, category_id, token)
 
     # Process the questions/answers
-    write_questions("%d.csv" % category["id"], questions)
+    write_questions(category["id"], questions)
 
 
 def next_batch(nb_questions, category_id, token):
@@ -67,24 +69,25 @@ def next_batch(nb_questions, category_id, token):
     return json.loads(html)["results"]
 
 
-def write_questions(filename, questions):
+def write_questions(category_id, questions):
     # Create the category file
+    filename = "%d.csv" % category_id
     file = open(filename, "w")
 
+    count = 0
     for q in questions:
-        line = ""
-        if q["type"] == "boolean":
-            line += q["question"].replace(";", "") + ";" + "True or false?"
-        else:
-            line += q["question"].replace(";", "") + ";"
-            answers = [q["correct_answer"]] + q["incorrect_answers"]
-            shuffle(answers)
-            for answer in answers:
-                line += answer.replace(";", "") + "<br>"
-            line = line[:-4]
-        line += ";" + q["correct_answer"].replace(";", "") + "\n"
-        file.write(line)
-
+        if q["type"] != "boolean":  # skip all true/false questions
+            count += 1
+            out_dict = {
+                "Question": '"' + q["question"] + '"',
+                "Answers": '{"' + q["correct_answer"] + '"}',
+                "Category": str(category_id),
+                "Points": q["difficulty"],
+                "Hints": "{}",
+            }
+            for k, v in out_dict.items():
+                file.write("TriviaBot_Questions[2]['%s'][%d] = %s;\n" % (k, count, v))
+            file.write("\n")
     file.close
 
 
