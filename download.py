@@ -14,8 +14,6 @@ nb_questions_per_batch = 50
 response = urlopen("https://opentdb.com/api_category.php")
 html = response.read()
 categories = json.loads(html)["trivia_categories"]
-print("Got the following categories:")
-print(categories)
 
 # Generate a token
 response = urlopen("https://opentdb.com/api_token.php?command=request")
@@ -69,9 +67,23 @@ def next_batch(nb_questions, category_id, token):
     return json.loads(html)["results"]
 
 
+def write_categories(filename, categories):
+    print("Got the following categories:")
+    for category in categories:
+        print(category["id"], category["name"])
+
+    file = open(filename, "w")
+    for category in categories:
+        file.write(
+            "TriviaBot_Questions[1]['Categories'][%d] = \"%s\";\n"
+            % (category["id"], category["name"])
+        )
+    file.close()
+
+
 def write_questions(category_id, questions):
     # Create the category file
-    filename = "%d.csv" % category_id
+    filename = "%d.lua" % category_id
     file = open(filename, "w")
 
     count = 0
@@ -82,8 +94,8 @@ def write_questions(category_id, questions):
                 "Question": '"' + q["question"] + '"',
                 "Answers": '{"' + q["correct_answer"] + '"}',
                 "Category": str(category_id),
-                "Points": q["difficulty"],
-                "Hints": "{}",
+                "Points": difficulty_to_points(q["difficulty"]),
+                "Hints": '{"%s"}' % (options_string(q)),
             }
             for k, v in out_dict.items():
                 file.write("TriviaBot_Questions[2]['%s'][%d] = %s;\n" % (k, count, v))
@@ -91,7 +103,28 @@ def write_questions(category_id, questions):
     file.close
 
 
+def options_string(question):
+    print(question)
+    o = question["incorrect_answers"]
+    o.append(question["correct_answer"])
+    assert len(o) == 4
+    o.shuffle()
+    return "Options: %s; %s; %s; %s" % (o[0], o[1], o[2], o[3])
+
+
+def difficulty_to_points(string):
+    if string == "easy":
+        return 1
+    elif string == "medium":
+        return 2
+    elif string == "hard":
+        return 3
+    raise Exception("Invalid difficulty: " + string)
+    
+    
 if __name__ == "__main__":
+    categories = [categories[0], categories[1]]  # for testing
+    write_categories("categories.lua", categories)
     nbProcesses = len(categories)
     with Pool(nbProcesses) as p:
         p.map(download_category, categories)
