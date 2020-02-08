@@ -1,3 +1,4 @@
 *.csv
 *.swp
 .vscode/*
+TriviaBotQuizOpenTDB/TriviaQuestions.lua

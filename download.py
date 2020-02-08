@@ -24,7 +24,6 @@ print("Using session token: " + session_token)
 
 def download_category(category, token=session_token):
     category_id = category["id"]
-    print("Working on category %d" % category_id)
 
     # Get the number of questions for this category
     response = urlopen("https://opentdb.com/api_count.php?category=%d" % category_id)
@@ -78,6 +77,7 @@ def write_categories(filename, categories):
             "TriviaBot_Questions[1]['Categories'][%d] = \"%s\";\n"
             % (category["id"], category["name"])
         )
+    file.write("\n")
     file.close()
 
 
@@ -104,7 +104,6 @@ def write_questions(category_id, questions):
 
 
 def options_string(question):
-    print(question)
     o = question["incorrect_answers"]
     o.append(question["correct_answer"])
     assert len(o) == 4
@@ -123,7 +122,7 @@ def difficulty_to_points(string):
     
     
 if __name__ == "__main__":
-    categories = [categories[0], categories[1]]  # for testing
+    #categories = [categories[0], categories[1]]  # for testing
     write_categories("categories.lua", categories)
     nbProcesses = len(categories)
     with Pool(nbProcesses) as p:
