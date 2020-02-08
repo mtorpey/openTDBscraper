@@ -108,7 +108,7 @@ def options_string(question):
     o = question["incorrect_answers"]
     o.append(question["correct_answer"])
     assert len(o) == 4
-    o.shuffle()
+    shuffle(o)
     return "Options: %s; %s; %s; %s" % (o[0], o[1], o[2], o[3])
 
 
