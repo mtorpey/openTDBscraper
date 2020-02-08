@@ -6,6 +6,7 @@ from urllib.request import urlopen
 from random import shuffle
 from math import floor
 from multiprocessing import Pool
+from html import unescape
 
 
 nb_questions_per_batch = 50
@@ -91,14 +92,14 @@ def write_questions(category_id, questions):
         if q["type"] != "boolean":  # skip all true/false questions
             count += 1
             out_dict = {
-                "Question": '"' + q["question"] + '"',
-                "Answers": '{"' + q["correct_answer"] + '"}',
+                "Question": '[[' + unescape(q["question"]) + ']]',
+                "Answers": '{[[' + unescape(q["correct_answer"]) + ']]}',
                 "Category": str(category_id),
                 "Points": difficulty_to_points(q["difficulty"]),
-                "Hints": '{"%s"}' % (options_string(q)),
+                "Hints": '{[[%s]]}' % (options_string(q)),
             }
             for k, v in out_dict.items():
-                file.write("TriviaBot_Questions[2]['%s'][%d] = %s;\n" % (k, count, v))
+                file.write("TriviaBot_Questions[1]['%s'][%d] = %s;\n" % (k, count, v))
             file.write("\n")
     file.close
 
@@ -108,6 +109,7 @@ def options_string(question):
     o.append(question["correct_answer"])
     assert len(o) == 4
     shuffle(o)
+    o = list(map(unescape, o))
     return "Options: %s; %s; %s; %s" % (o[0], o[1], o[2], o[3])
 
 
