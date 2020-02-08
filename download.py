@@ -92,11 +92,11 @@ def write_questions(category_id, questions):
         if q["type"] != "boolean":  # skip all true/false questions
             count += 1
             out_dict = {
-                "Question": '[[' + unescape(q["question"]) + ']]',
-                "Answers": '{[[' + unescape(q["correct_answer"]) + ']]}',
+                "Question": "[[" + unescape(q["question"]) + "]]",
+                "Answers": "{[[" + unescape(q["correct_answer"]) + "]]}",
                 "Category": str(category_id),
                 "Points": difficulty_to_points(q["difficulty"]),
-                "Hints": '{[[%s]]}' % (options_string(q)),
+                "Hints": "{[[%s]]}" % (options_string(q)),
             }
             for k, v in out_dict.items():
                 file.write("TriviaBot_Questions[1]['%s'][%d] = %s;\n" % (k, count, v))
@@ -121,10 +121,10 @@ def difficulty_to_points(string):
     elif string == "hard":
         return 3
     raise Exception("Invalid difficulty: " + string)
-    
-    
+
+
 if __name__ == "__main__":
-    #categories = [categories[0], categories[1]]  # for testing
+    # categories = [categories[0], categories[1]]  # for testing
     write_categories("categories.lua", categories)
     nbProcesses = len(categories)
     with Pool(nbProcesses) as p:
