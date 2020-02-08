@@ -119,7 +119,7 @@ def options_string(question):
     assert len(o) == 4
     shuffle(o)
     o = list(map(unescape, o))
-    return "Options: %s; %s; %s; %s" % (o[0], o[1], o[2], o[3])
+    return "OPTIONS: %s; %s; %s; %s" % (o[0], o[1], o[2], o[3])
 
 
 def difficulty_to_points(string):
